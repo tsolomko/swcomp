@@ -4,6 +4,7 @@ import Foundation
 do {
   let archType = CommandLine.arguments[1]
   let fileData = try Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[2]))
+  let outputPath = CommandLine.arguments[3]
   let decompressedData: Data
   switch archType {
   case "bzip2":
@@ -14,7 +15,7 @@ do {
     print("ERROR: unknown archive type.")
     exit(1)
   }
-  try decompressedData.write(to: URL(fileURLWithPath: "./data.out"))
+  try decompressedData.write(to: URL(fileURLWithPath: outputPath))
 } catch let error {
   print("ERROR: \(error)")
   exit(1)
