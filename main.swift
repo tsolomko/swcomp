@@ -3,7 +3,8 @@ import Foundation
 
 do {
   let archType = CommandLine.arguments[1]
-  let fileData = try Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[2]))
+    let fileData = try Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[2]),
+                            options: .mappedIfSafe)
   let outputPath = CommandLine.arguments[3]
   let decompressedData: Data
   switch archType {
