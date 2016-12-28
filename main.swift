@@ -8,6 +8,10 @@ do {
   let outputPath = CommandLine.arguments[3]
   let decompressedData: Data
   switch archType {
+  case "lzma":
+    decompressedData = try LZMA.decompress(compressedData: fileData)
+  case "xz":
+    decompressedData = try XZArchive.unarchive(archiveData: fileData)
   case "bzip2":
     decompressedData = try BZip2.decompress(compressedData: fileData)
   case "gzip":
