@@ -1,4 +1,5 @@
 # swcomp
+[![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/tsolomko/SWCompression/master/LICENSE)
 A small command-line tool which decompresses and unarchives several types of archives.
 Its main purpose is to serve as an example of capabilities of [SWCompression](https://github.com/tsolomko/SWCompression).
 
