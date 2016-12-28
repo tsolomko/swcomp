@@ -9,7 +9,7 @@ Compiling
 First, clone this repository:
 
 `
-git clone https://github.com/tsolomko/swcomp
+git clone https://github.com/tsolomko/swcomp.git
 `
 
 Then build it with:
