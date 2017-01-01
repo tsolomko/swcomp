@@ -5,7 +5,7 @@ import Foundation
 when Bundle.allBundles() function of Foundation framework becomes implemented.*/
 // Version constants:
 let SWCompressionVersion = "2.0.0"
-let swcompRevision = "22"
+let swcompRevision = "23"
 
 func printHelp() {
     print("Unimplemented.")
