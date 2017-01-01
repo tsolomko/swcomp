@@ -5,11 +5,11 @@ import Foundation
 when Bundle.allBundles() function of Foundation framework becomes implemented.*/
 // Version constants:
 let SWCompressionVersion = "2.0.0"
-let swcompRevision = "18"
+let swcompRevision = "19"
 
 func printHelp() {
     print("Unimplemented.")
-    exit(0)
+    exit(1)
 }
 
 func printVersion() {
@@ -20,7 +20,8 @@ func printVersion() {
 
 if CommandLine.arguments.count < 2 {
     print("Not enough arguments passed. See --help or -h for more information")
-    exit(0)
+    exit(1)
+}
 }
 
 do {
