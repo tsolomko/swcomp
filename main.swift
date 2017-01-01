@@ -6,6 +6,11 @@ when Bundle.allBundles() function of Foundation framework becomes implemented.*/
 // Version constants:
 let SWCompressionVersion = "2.0.0"
 let swcompRevision = "14"
+let swcompRevision = "15"
+
+if CommandLine.arguments.count < 1 {
+    print("Not enough arguments passed. See --help or -h for more information")
+}
 
 do {
     let archType = CommandLine.arguments[1]
