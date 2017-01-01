@@ -5,8 +5,7 @@ import Foundation
 when Bundle.allBundles() function of Foundation framework becomes implemented.*/
 // Version constants:
 let SWCompressionVersion = "2.0.0"
-let swcompRevision = "14"
-let swcompRevision = "15"
+let swcompRevision = "16"
 
 if CommandLine.arguments.count < 1 {
     print("Not enough arguments passed. See --help or -h for more information")
@@ -14,6 +13,11 @@ if CommandLine.arguments.count < 1 {
 
 do {
     let archType = CommandLine.arguments[1]
+    if archType == "--help" || archType == "-h" {
+        printHelp()
+    } else if archType == "--version" {
+        printVersion()
+    }
     let fileData = try Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[2]),
                             options: .mappedIfSafe)
     let outputPath = CommandLine.arguments[3]
@@ -37,3 +41,10 @@ do {
     exit(1)
 }
 exit(0)
+
+func printHelp() {
+    print("Unimplemented.")
+}
+
+func printVersion() {
+}
