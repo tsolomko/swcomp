@@ -3,6 +3,9 @@ import Foundation
 
 /* TODO: Add '--version' command-line option
 when Bundle.allBundles() function of Foundation framework becomes implemented.*/
+// Version constants:
+let SWCompressionVersion = "2.0.0"
+let swcompRevision = "14"
 
 do {
     let archType = CommandLine.arguments[1]
