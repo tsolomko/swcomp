@@ -1,11 +1,10 @@
 import SWCompression
 import Foundation
 
-/* TODO: Add '--version' command-line option
-when Bundle.allBundles() function of Foundation framework becomes implemented.*/
+/* TODO: Switch to usage of Bundle.allBundles() function of Foundation framework when it becomes implemented.*/
 // Version constants:
-let SWCompressionVersion = "2.0.0"
-let swcompRevision = "23"
+let SWCompressionVersion = "2.0.1"
+let swcompRevision = "24"
 
 func printHelp() {
     print("Unimplemented.")
@@ -66,4 +65,3 @@ do {
     exit(1)
 }
 exit(0)
-
