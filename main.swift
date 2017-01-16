@@ -3,8 +3,8 @@ import Foundation
 
 /* TODO: Switch to usage of Bundle.allBundles() function of Foundation framework when it becomes implemented.*/
 // Version constants:
-let SWCompressionVersion = "2.0.1"
-let swcompRevision = "24"
+let SWCompressionVersion = "2.1.0-test"
+let swcompRevision = "25"
 
 func printHelp() {
     print("Unimplemented.")
@@ -28,6 +28,7 @@ if CommandLine.arguments.count == 2 {
     case "--help": printHelp()
     case "--version": printVersion()
     case "xz": fallthrough
+    case "zip": fallthrough
     case "lzma": fallthrough
     case "bzip2": fallthrough
     case "gzip":
@@ -55,13 +56,30 @@ do {
         decompressedData = try BZip2.decompress(compressedData: fileData)
     case "gzip":
         decompressedData = try GzipArchive.unarchive(archiveData: fileData)
+    case "zip":
+        let zipList = try ZipContainer.open(containerData: fileData)
+        for entry in zipList {
+            let entryData = entry.entryData
+            if entryData.count == 0 {
+                let directoryURL = URL(fileURLWithPath: outputPath)
+                    .appendingPathComponent(entry.entryName, isDirectory: true)
+                print("directory: \(directoryURL.path)")
+                try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+            } else {
+                let fileURL = URL(fileURLWithPath: outputPath)
+                    .appendingPathComponent(entry.entryName, isDirectory: false)
+                print("file: \(fileURL.path)")
+                try entryData.write(to: fileURL)
+            }
+        }
+        exit(0)
     default:
         print("ERROR: unknown archive type.")
         exit(1)
     }
     try decompressedData.write(to: URL(fileURLWithPath: outputPath))
+    exit(0)
 } catch let error {
     print("ERROR: \(error)")
     exit(1)
 }
-exit(0)
