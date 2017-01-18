@@ -3,8 +3,8 @@ import Foundation
 
 /* TODO: Switch to usage of Bundle.allBundles() function of Foundation framework when it becomes implemented.*/
 // Version constants:
-let SWCompressionVersion = "2.1.0-test"
-let swcompRevision = "25"
+let SWCompressionVersion = "2.1.0-test2"
+let swcompRevision = "26"
 
 func printHelp() {
     print("Unimplemented.")
@@ -60,14 +60,15 @@ do {
         let zipList = try ZipContainer.open(containerData: fileData)
         for entry in zipList {
             let entryData = entry.entryData
-            if entryData.count == 0 {
+            let entryName = entry.entryName
+            if entryData.count == 0 && entryName.characters.last! == "/"  {
                 let directoryURL = URL(fileURLWithPath: outputPath)
-                    .appendingPathComponent(entry.entryName, isDirectory: true)
+                    .appendingPathComponent(entryName, isDirectory: true)
                 print("directory: \(directoryURL.path)")
                 try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
             } else {
                 let fileURL = URL(fileURLWithPath: outputPath)
-                    .appendingPathComponent(entry.entryName, isDirectory: false)
+                    .appendingPathComponent(entryName, isDirectory: false)
                 print("file: \(fileURL.path)")
                 try entryData.write(to: fileURL)
             }
