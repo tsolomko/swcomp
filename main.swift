@@ -3,8 +3,8 @@ import Foundation
 
 /* TODO: Switch to usage of Bundle.allBundles() function of Foundation framework when it becomes implemented.*/
 // Version constants:
-let SWCompressionVersion = "2.1.0-test2"
-let swcompRevision = "26"
+let SWCompressionVersion = "2.1.0"
+let swcompRevision = "27"
 
 func printHelp() {
     print("Unimplemented.")
