@@ -1,86 +1,116 @@
-import SWCompression
 import Foundation
+import SWCompression
+import SwiftCLI
 
 /* TODO: Switch to usage of Bundle.allBundles() function of Foundation framework when it becomes implemented.*/
 // Version constants:
 let SWCompressionVersion = "2.3.0"
-let swcompRevision = "29"
+let swcompRevision = "30"
 
-func printHelp() {
-    print("Unimplemented.")
-    exit(1)
-}
+class XZCommand: Command {
 
-func printVersion() {
-    print("SWCompression version used: \(SWCompressionVersion)")
-    print("swcomp revision: \(swcompRevision)")
-    exit(0)
-}
+    let name = "xz"
+    let shortDescription = "Extracts XZ archive"
 
-if CommandLine.arguments.count < 2 {
-    print("No arguments were passed. See --help or -h for more information")
-    exit(1)
-}
+    let archive = Parameter()
+    let outputPath = Parameter()
 
-if CommandLine.arguments.count == 2 {
-    switch CommandLine.arguments[1] {
-    case "-h": fallthrough
-    case "--help": printHelp()
-    case "--version": printVersion()
-    case "xz": fallthrough
-    case "zip": fallthrough
-    case "lzma": fallthrough
-    case "bzip2": fallthrough
-    case "gzip":
-        print("Not enough arguments were passed. See --help or -h for more information")
-        exit(1)
-
-    default:
-        print("Unknown option or argument was passed.")
-        exit(1)
+    func execute() throws {
+      let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
+                              options: .mappedIfSafe)
+      let outputPath = self.outputPath.value
+      let decompressedData = try XZArchive.unarchive(archiveData: fileData)
+      try decompressedData.write(to: URL(fileURLWithPath: outputPath))
     }
+
 }
 
-do {
-    let archType = CommandLine.arguments[1]
-    let fileData = try Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[2]),
-                            options: .mappedIfSafe)
-    let outputPath = CommandLine.arguments[3]
-    let decompressedData: Data
-    switch archType {
-    case "lzma":
-        decompressedData = try LZMA.decompress(compressedData: fileData)
-    case "xz":
-        decompressedData = try XZArchive.unarchive(archiveData: fileData)
-    case "bzip2":
-        decompressedData = try BZip2.decompress(compressedData: fileData)
-    case "gzip":
-        decompressedData = try GzipArchive.unarchive(archiveData: fileData)
-    case "zip":
-        let zipList = try ZipContainer.open(containerData: fileData)
-        for entry in zipList {
-            let entryData = entry.entryData
-            let entryName = entry.entryName
-            if entryData.count == 0 && entryName.characters.last! == "/"  {
-                let directoryURL = URL(fileURLWithPath: outputPath)
-                    .appendingPathComponent(entryName, isDirectory: true)
-                print("directory: \(directoryURL.path)")
-                try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
-            } else {
-                let fileURL = URL(fileURLWithPath: outputPath)
-                    .appendingPathComponent(entryName, isDirectory: false)
-                print("file: \(fileURL.path)")
-                try entryData.write(to: fileURL)
-            }
-        }
-        exit(0)
-    default:
-        print("ERROR: unknown archive type.")
-        exit(1)
+class LZMACommand: Command {
+
+    let name = "lzma"
+    let shortDescription = "Extracts LZMA archive"
+
+    let archive = Parameter()
+    let outputPath = Parameter()
+
+    func execute() throws {
+      let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
+                              options: .mappedIfSafe)
+      let outputPath = self.outputPath.value
+      let decompressedData = try LZMA.decompress(compressedData: fileData)
+      try decompressedData.write(to: URL(fileURLWithPath: outputPath))
     }
-    try decompressedData.write(to: URL(fileURLWithPath: outputPath))
-    exit(0)
-} catch let error {
-    print("ERROR: \(error)")
-    exit(1)
+
 }
+
+class BZip2Command: Command {
+
+    let name = "bz2"
+    let shortDescription = "Extracts BZip2 archive"
+
+    let archive = Parameter()
+    let outputPath = Parameter()
+
+    func execute() throws {
+      let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
+                              options: .mappedIfSafe)
+      let outputPath = self.outputPath.value
+      let decompressedData = try BZip2.decompress(compressedData: fileData)
+      try decompressedData.write(to: URL(fileURLWithPath: outputPath))
+    }
+
+}
+
+class GZipCommand: Command {
+
+    let name = "gz"
+    let shortDescription = "Extracts GZip archive"
+
+    let archive = Parameter()
+    let outputPath = Parameter()
+
+    func execute() throws {
+      let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
+                              options: .mappedIfSafe)
+      let outputPath = self.outputPath.value
+      let decompressedData = try GzipArchive.unarchive(archiveData: fileData)
+      try decompressedData.write(to: URL(fileURLWithPath: outputPath))
+    }
+
+}
+
+class ZipCommand: Command {
+
+    let name = "zip"
+    let shortDescription = "Extracts ZIP archive"
+
+    let archive = Parameter()
+    let outputPath = Parameter()
+
+    func execute() throws {
+      let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
+                              options: .mappedIfSafe)
+      let outputPath = self.outputPath.value
+      let zipList = try ZipContainer.open(containerData: fileData)
+      for entry in zipList {
+          let entryData = entry.entryData
+          let entryName = entry.entryName
+          if entryData.count == 0 && entryName.characters.last! == "/"  {
+              let directoryURL = URL(fileURLWithPath: outputPath)
+                  .appendingPathComponent(entryName, isDirectory: true)
+              print("directory: \(directoryURL.path)")
+              try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+          } else {
+              let fileURL = URL(fileURLWithPath: outputPath)
+                  .appendingPathComponent(entryName, isDirectory: false)
+              print("file: \(fileURL.path)")
+              try entryData.write(to: fileURL)
+          }
+      }
+    }
+
+}
+
+CLI.setup(name: "swcomp", version: swcompRevision, description: "swcomp - small command-line client for SWCompression framework.")
+CLI.register(commands: [XZCommand(), LZMACommand(), BZip2Command(), GZipCommand(), ZipCommand()])
+_ = CLI.go()
