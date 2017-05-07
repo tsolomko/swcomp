@@ -4,8 +4,8 @@ import SwiftCLI
 
 /* TODO: Switch to usage of Bundle.allBundles() function of Foundation framework when it becomes implemented.*/
 // Version constants:
-let SWCompressionVersion = "2.3.0"
-let swcompRevision = "31"
+let SWCompressionVersion = "2.4.2"
+let swcompRevision = "32"
 
 class XZCommand: Command {
 
@@ -113,7 +113,7 @@ class ZipCommand: Command {
       for entry in zipList {
           let entryData = entry.entryData
           let entryName = entry.entryName
-          if entryData.count == 0 && entryName.characters.last! == "/"  {
+          if entryData.count == 0 && entryName.characters.last! == "/" {
               let directoryURL = URL(fileURLWithPath: outputPath)
                   .appendingPathComponent(entryName, isDirectory: true)
               print("directory: \(directoryURL.path)")

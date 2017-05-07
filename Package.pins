@@ -1,0 +1,18 @@
+{
+  "autoPin": true,
+  "pins": [
+    {
+      "package": "SWCompression",
+      "reason": null,
+      "repositoryURL": "https://github.com/tsolomko/SWCompression.git",
+      "version": "2.4.2"
+    },
+    {
+      "package": "SwiftCLI",
+      "reason": null,
+      "repositoryURL": "https://github.com/jakeheis/SwiftCLI",
+      "version": "3.0.0"
+    }
+  ],
+  "version": 1
+}
