@@ -5,7 +5,7 @@ import SwiftCLI
 /* TODO: Switch to usage of Bundle.allBundles() function of Foundation framework when it becomes implemented.*/
 // Version constants:
 let SWCompressionVersion = "3.0.0"
-let swcompRevision = "34"
+let swcompRevision = "35"
 
 class XZCommand: Command {
 
@@ -131,7 +131,7 @@ class ZipCommand: Command {
 }
 
 CLI.setup(name: "swcomp",
-          version: swcompRevision,
+          version: "\(swcompRevision), SWCompression version: \(SWCompressionVersion)",
           description: "swcomp - small command-line client for SWCompression framework.")
 CLI.register(commands: [XZCommand(),
                         LZMACommand(),
