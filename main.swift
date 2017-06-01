@@ -5,7 +5,7 @@ import SwiftCLI
 /* TODO: Switch to usage of Bundle.allBundles() function of Foundation framework when it becomes implemented.*/
 // Version constants:
 let SWCompressionVersion = "3.0.0"
-let swcompRevision = "33"
+let swcompRevision = "34"
 
 class XZCommand: Command {
 
@@ -16,11 +16,11 @@ class XZCommand: Command {
     let outputPath = Parameter()
 
     func execute() throws {
-      let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
-                              options: .mappedIfSafe)
-      let outputPath = self.outputPath.value
-      let decompressedData = try XZArchive.unarchive(archive: fileData)
-      try decompressedData.write(to: URL(fileURLWithPath: outputPath))
+        let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
+                                options: .mappedIfSafe)
+        let outputPath = self.outputPath.value
+        let decompressedData = try XZArchive.unarchive(archive: fileData)
+        try decompressedData.write(to: URL(fileURLWithPath: outputPath))
     }
 
 }
@@ -34,11 +34,11 @@ class LZMACommand: Command {
     let outputPath = Parameter()
 
     func execute() throws {
-      let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
-                              options: .mappedIfSafe)
-      let outputPath = self.outputPath.value
-      let decompressedData = try LZMA.decompress(data: fileData)
-      try decompressedData.write(to: URL(fileURLWithPath: outputPath))
+        let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
+                                options: .mappedIfSafe)
+        let outputPath = self.outputPath.value
+        let decompressedData = try LZMA.decompress(data: fileData)
+        try decompressedData.write(to: URL(fileURLWithPath: outputPath))
     }
 
 }
@@ -52,11 +52,11 @@ class BZip2Command: Command {
     let outputPath = Parameter()
 
     func execute() throws {
-      let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
-                              options: .mappedIfSafe)
-      let outputPath = self.outputPath.value
-      let decompressedData = try BZip2.decompress(data: fileData)
-      try decompressedData.write(to: URL(fileURLWithPath: outputPath))
+        let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
+                                options: .mappedIfSafe)
+        let outputPath = self.outputPath.value
+        let decompressedData = try BZip2.decompress(data: fileData)
+        try decompressedData.write(to: URL(fileURLWithPath: outputPath))
     }
 
 }
@@ -70,11 +70,11 @@ class GZipCommand: Command {
     let outputPath = Parameter()
 
     func execute() throws {
-      let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
-                              options: .mappedIfSafe)
-      let outputPath = self.outputPath.value
-      let decompressedData = try GzipArchive.unarchive(archive: fileData)
-      try decompressedData.write(to: URL(fileURLWithPath: outputPath))
+        let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
+                                options: .mappedIfSafe)
+        let outputPath = self.outputPath.value
+        let decompressedData = try GzipArchive.unarchive(archive: fileData)
+        try decompressedData.write(to: URL(fileURLWithPath: outputPath))
     }
 
 }
@@ -88,11 +88,11 @@ class CompressGZipCommand: Command {
     let outputArchive = Parameter()
 
     func execute() throws {
-      let fileData = try Data(contentsOf: URL(fileURLWithPath: self.inputFile.value),
-                              options: .mappedIfSafe)
-      let outputPath = self.outputArchive.value
-      let compressedData = try GzipArchive.archive(data: fileData)
-      try compressedData.write(to: URL(fileURLWithPath: outputPath))
+        let fileData = try Data(contentsOf: URL(fileURLWithPath: self.inputFile.value),
+                                options: .mappedIfSafe)
+        let outputPath = self.outputArchive.value
+        let compressedData = try GzipArchive.archive(data: fileData)
+        try compressedData.write(to: URL(fileURLWithPath: outputPath))
     }
 
 }
@@ -106,29 +106,37 @@ class ZipCommand: Command {
     let outputPath = Parameter()
 
     func execute() throws {
-      let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
-                              options: .mappedIfSafe)
-      let outputPath = self.outputPath.value
-      let zipList = try ZipContainer.open(container: fileData)
-      for entry in zipList {
-          let entryName = entry.name
-          if entry.isDirectory {
-              let directoryURL = URL(fileURLWithPath: outputPath)
-                  .appendingPathComponent(entryName, isDirectory: true)
-              print("directory: \(directoryURL.path)")
-              try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
-          } else {
-              let entryData = try entry.data()
-              let fileURL = URL(fileURLWithPath: outputPath)
-                  .appendingPathComponent(entryName, isDirectory: false)
-              print("file: \(fileURL.path)")
-              try entryData.write(to: fileURL)
-          }
-      }
+        let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
+                                options: .mappedIfSafe)
+        let outputPath = self.outputPath.value
+        let zipList = try ZipContainer.open(container: fileData)
+        for entry in zipList {
+            let entryName = entry.name
+            if entry.isDirectory {
+                let directoryURL = URL(fileURLWithPath: outputPath)
+                    .appendingPathComponent(entryName, isDirectory: true)
+                print("directory: \(directoryURL.path)")
+                try FileManager.default.createDirectory(at: directoryURL,
+                                                        withIntermediateDirectories: true)
+            } else {
+                let entryData = try entry.data()
+                let fileURL = URL(fileURLWithPath: outputPath)
+                    .appendingPathComponent(entryName, isDirectory: false)
+                print("file: \(fileURL.path)")
+                try entryData.write(to: fileURL)
+            }
+        }
     }
 
 }
 
-CLI.setup(name: "swcomp", version: swcompRevision, description: "swcomp - small command-line client for SWCompression framework.")
-CLI.register(commands: [XZCommand(), LZMACommand(), BZip2Command(), GZipCommand(), CompressGZipCommand(), ZipCommand()])
+CLI.setup(name: "swcomp",
+          version: swcompRevision,
+          description: "swcomp - small command-line client for SWCompression framework.")
+CLI.register(commands: [XZCommand(),
+                        LZMACommand(),
+                        BZip2Command(),
+                        GZipCommand(),
+                        CompressGZipCommand(),
+                        ZipCommand()])
 _ = CLI.go()
