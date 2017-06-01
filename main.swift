@@ -5,7 +5,7 @@ import SwiftCLI
 /* TODO: Switch to usage of Bundle.allBundles() function of Foundation framework when it becomes implemented.*/
 // Version constants:
 let SWCompressionVersion = "3.0.0"
-let swcompRevision = "35"
+let swcompRevision = "36"
 
 class XZCommand: Command {
 
@@ -88,11 +88,14 @@ class CompressGZipCommand: Command {
     let outputArchive = Parameter()
 
     func execute() throws {
-        let fileData = try Data(contentsOf: URL(fileURLWithPath: self.inputFile.value),
-                                options: .mappedIfSafe)
-        let outputPath = self.outputArchive.value
-        let compressedData = try GzipArchive.archive(data: fileData)
-        try compressedData.write(to: URL(fileURLWithPath: outputPath))
+        let inputURL = URL(fileURLWithPath: self.inputFile.value)
+        let outputURL = URL(fileURLWithPath: self.outputArchive.value)
+        let fileData = try Data(contentsOf: inputURL, options: .mappedIfSafe)
+        let fileName = inputURL.lastPathComponent
+        let compressedData = try GzipArchive.archive(data: fileData,
+                                                     fileName: fileName.isEmpty ? nil : fileName,
+                                                     writeHeaderCRC: true)
+        try compressedData.write(to: outputURL)
     }
 
 }
