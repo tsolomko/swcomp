@@ -5,7 +5,7 @@ import SwiftCLI
 /* TODO: Switch to usage of Bundle.allBundles() function of Foundation framework when it becomes implemented.*/
 // Version constants:
 let SWCompressionVersion = "3.0.0"
-let swcompRevision = "36"
+let swcompRevision = "37"
 
 class XZCommand: Command {
 
@@ -63,7 +63,7 @@ class BZip2Command: Command {
 
 class GZipCommand: Command {
 
-    let name = "gz"
+    let name = "gz-d"
     let shortDescription = "Extracts GZip archive"
 
     let archive = Parameter()
@@ -81,7 +81,7 @@ class GZipCommand: Command {
 
 class CompressGZipCommand: Command {
 
-    let name = "cgz"
+    let name = "gz-c"
     let shortDescription = "Compresses GZip archive"
 
     let inputFile = Parameter()
