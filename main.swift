@@ -5,7 +5,7 @@ import SwiftCLI
 /* TODO: Switch to usage of Bundle.allBundles() function of Foundation framework when it becomes implemented.*/
 // Version constants:
 let SWCompressionVersion = "3.0.0"
-let swcompRevision = "41"
+let swcompRevision = "42"
 
 class XZCommand: Command {
 
@@ -212,6 +212,44 @@ class TgzCommand: Command {
 
 }
 
+class TxzCommand: Command {
+
+    let name = "txz"
+    let shortDescription = "Extracts TAR container compressed with XZ"
+
+    let archive = Parameter()
+    let outputPath = Parameter()
+
+    func execute() throws {
+        let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
+                                options: .mappedIfSafe)
+        let containerData = try XZArchive.unarchive(archive: fileData)
+        let outputPath = self.outputPath.value
+        let entries = try TarContainer.open(container: containerData)
+        for entry in entries {
+            let entryName = entry.name
+            if entry.isDirectory {
+                let directoryURL = URL(fileURLWithPath: outputPath)
+                    .appendingPathComponent(entryName, isDirectory: true)
+                if verbose.value {
+                    print("directory: \(directoryURL.path)")
+                }
+                try FileManager.default.createDirectory(at: directoryURL,
+                                                        withIntermediateDirectories: true)
+            } else {
+                let entryData = try entry.data()
+                let fileURL = URL(fileURLWithPath: outputPath)
+                    .appendingPathComponent(entryName, isDirectory: false)
+                if verbose.value {
+                    print("file: \(fileURL.path)")
+                }
+                try entryData.write(to: fileURL)
+            }
+        }
+    }
+
+}
+
 struct SWCompGlobalOptions: GlobalOptionsSource {
     static let verbose = Flag("--verbose", usage: "Print the list of extracted files and directories.")
     static var options: [Option] {
@@ -237,6 +275,12 @@ extension TgzCommand {
     }
 }
 
+extension TxzCommand {
+    var verbose: Flag {
+        return SWCompGlobalOptions.verbose
+    }
+}
+
 CLI.setup(name: "swcomp",
           version: "\(swcompRevision), SWCompression version: \(SWCompressionVersion)",
           description: "swcomp - small command-line client for SWCompression framework.")
@@ -248,5 +292,6 @@ CLI.register(commands: [XZCommand(),
                         CompressGZipCommand(),
                         ZipCommand(),
                         TarCommand(),
-                        TgzCommand()])
+                        TgzCommand(),
+                        TxzCommand()])
 _ = CLI.go()
