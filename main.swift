@@ -5,7 +5,7 @@ import SwiftCLI
 /* TODO: Switch to usage of Bundle.allBundles() function of Foundation framework when it becomes implemented.*/
 // Version constants:
 let SWCompressionVersion = "3.0.0"
-let swcompRevision = "39"
+let swcompRevision = "40"
 
 class XZCommand: Command {
 
@@ -118,14 +118,18 @@ class ZipCommand: Command {
             if entry.isDirectory {
                 let directoryURL = URL(fileURLWithPath: outputPath)
                     .appendingPathComponent(entryName, isDirectory: true)
-                print("directory: \(directoryURL.path)")
+                if verbose.value {
+                    print("directory: \(directoryURL.path)")
+                }
                 try FileManager.default.createDirectory(at: directoryURL,
                                                         withIntermediateDirectories: true)
             } else {
                 let entryData = try entry.data()
                 let fileURL = URL(fileURLWithPath: outputPath)
                     .appendingPathComponent(entryName, isDirectory: false)
-                print("file: \(fileURL.path)")
+                if verbose.value {
+                    print("file: \(fileURL.path)")
+                }
                 try entryData.write(to: fileURL)
             }
         }
@@ -151,14 +155,18 @@ class TarCommand: Command {
             if entry.isDirectory {
                 let directoryURL = URL(fileURLWithPath: outputPath)
                     .appendingPathComponent(entryName, isDirectory: true)
-                print("directory: \(directoryURL.path)")
+                if verbose.value {
+                    print("directory: \(directoryURL.path)")
+                }
                 try FileManager.default.createDirectory(at: directoryURL,
                                                         withIntermediateDirectories: true)
             } else {
                 let entryData = try entry.data()
                 let fileURL = URL(fileURLWithPath: outputPath)
                     .appendingPathComponent(entryName, isDirectory: false)
-                print("file: \(fileURL.path)")
+                if verbose.value {
+                    print("file: \(fileURL.path)")
+                }
                 try entryData.write(to: fileURL)
             }
         }
@@ -166,9 +174,29 @@ class TarCommand: Command {
 
 }
 
+struct SWCompGlobalOptions: GlobalOptionsSource {
+    static let verbose = Flag("--verbose", usage: "Print the list of extracted files and directories.")
+    static var options: [Option] {
+        return [verbose]
+    }
+}
+
+extension ZipCommand {
+    var verbose: Flag {
+        return SWCompGlobalOptions.verbose
+    }
+}
+
+extension TarCommand {
+    var verbose: Flag {
+        return SWCompGlobalOptions.verbose
+    }
+}
+
 CLI.setup(name: "swcomp",
           version: "\(swcompRevision), SWCompression version: \(SWCompressionVersion)",
           description: "swcomp - small command-line client for SWCompression framework.")
+GlobalOptions.source(SWCompGlobalOptions.self)
 CLI.register(commands: [XZCommand(),
                         LZMACommand(),
                         BZip2Command(),
