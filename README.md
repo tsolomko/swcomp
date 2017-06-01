@@ -26,9 +26,12 @@ And this significantly improves performance.
 
 Usage
 ------
-`swcomp <xz/bzip2/gzip/lzma> <path_to_archive> <path_to_output>`
+`swcomp <command> <path_to_archive_or_container> <path_to_output>`
 
 All arguments are required.
+
+To list all available commands, run:
+`swcomp help`
 
 It is recommended to specify full absolute paths, especially on Linux,
 because it seems like there are some problems with path resolving in Swift.
