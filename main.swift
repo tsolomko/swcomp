@@ -4,8 +4,8 @@ import SwiftCLI
 
 /* TODO: Switch to usage of Bundle.allBundles() function of Foundation framework when it becomes implemented.*/
 // Version constants:
-let SWCompressionVersion = "2.4.2"
-let swcompRevision = "32"
+let SWCompressionVersion = "3.0.0"
+let swcompRevision = "33"
 
 class XZCommand: Command {
 
@@ -19,7 +19,7 @@ class XZCommand: Command {
       let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
                               options: .mappedIfSafe)
       let outputPath = self.outputPath.value
-      let decompressedData = try XZArchive.unarchive(archiveData: fileData)
+      let decompressedData = try XZArchive.unarchive(archive: fileData)
       try decompressedData.write(to: URL(fileURLWithPath: outputPath))
     }
 
@@ -37,7 +37,7 @@ class LZMACommand: Command {
       let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
                               options: .mappedIfSafe)
       let outputPath = self.outputPath.value
-      let decompressedData = try LZMA.decompress(compressedData: fileData)
+      let decompressedData = try LZMA.decompress(data: fileData)
       try decompressedData.write(to: URL(fileURLWithPath: outputPath))
     }
 
@@ -55,7 +55,7 @@ class BZip2Command: Command {
       let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
                               options: .mappedIfSafe)
       let outputPath = self.outputPath.value
-      let decompressedData = try BZip2.decompress(compressedData: fileData)
+      let decompressedData = try BZip2.decompress(data: fileData)
       try decompressedData.write(to: URL(fileURLWithPath: outputPath))
     }
 
@@ -73,7 +73,7 @@ class GZipCommand: Command {
       let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
                               options: .mappedIfSafe)
       let outputPath = self.outputPath.value
-      let decompressedData = try GzipArchive.unarchive(archiveData: fileData)
+      let decompressedData = try GzipArchive.unarchive(archive: fileData)
       try decompressedData.write(to: URL(fileURLWithPath: outputPath))
     }
 
@@ -109,16 +109,16 @@ class ZipCommand: Command {
       let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
                               options: .mappedIfSafe)
       let outputPath = self.outputPath.value
-      let zipList = try ZipContainer.open(containerData: fileData)
+      let zipList = try ZipContainer.open(container: fileData)
       for entry in zipList {
-          let entryData = entry.entryData
-          let entryName = entry.entryName
-          if entryData.count == 0 && entryName.characters.last! == "/" {
+          let entryName = entry.name
+          if entry.isDirectory {
               let directoryURL = URL(fileURLWithPath: outputPath)
                   .appendingPathComponent(entryName, isDirectory: true)
               print("directory: \(directoryURL.path)")
               try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
           } else {
+              let entryData = try entry.data()
               let fileURL = URL(fileURLWithPath: outputPath)
                   .appendingPathComponent(entryName, isDirectory: false)
               print("file: \(fileURL.path)")
