@@ -7,6 +7,8 @@ class ZipCommand: Command {
     let name = "zip"
     let shortDescription = "Extracts ZIP container"
 
+    let noMtime = Flag("--no-restore-mtime", usage: "Don't restore modification time of files and directories.")
+
     let archive = Parameter()
     let outputPath = Parameter()
 
@@ -77,7 +79,7 @@ class ZipCommand: Command {
 
             var attributesLog = "\tattributes:"
 
-            if let mtime = attributes[FileAttributeKey.modificationDate] {
+            if !noMtime.value, let mtime = attributes[FileAttributeKey.modificationDate] {
                 attributesLog += " mtime: \(mtime)"
                 try fileManager.setAttributes([FileAttributeKey.modificationDate : mtime],
                                               ofItemAtPath: entryFullURL.path)
