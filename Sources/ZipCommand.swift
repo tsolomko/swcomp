@@ -20,11 +20,17 @@ class ZipCommand: Command {
 
         var isDir: ObjCBool = false
         if fileManager.fileExists(atPath: outputPath, isDirectory: &isDir) {
-            // TODO: probably will need to use isDir on linux.
-            if !isDir.boolValue {
-                print("ERROR: Specified path already exists and is not a directory.")
-                exit(1)
-            }
+            #if os(Linux) // On linux ObjCBool is an alias for Bool.
+                if !isDir {
+                    print("ERROR: Specified path already exists and is not a directory.")
+                    exit(1)
+                }
+            #else
+                if !isDir.boolValue {
+                    print("ERROR: Specified path already exists and is not a directory.")
+                    exit(1)
+                }
+            #endif
         } else {
             try fileManager.createDirectory(at: outputURL, withIntermediateDirectories: true)
         }
