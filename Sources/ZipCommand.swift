@@ -32,6 +32,10 @@ class ZipCommand: Command {
                                 options: .mappedIfSafe)
         let entries = try ZipContainer.open(container: fileData)
 
+        var directoryAttributes = [(attributes: [FileAttributeKey: Any],
+                                    path: String,
+                                    log: String)]()
+
         for entry in entries {
             let attributes = entry.entryAttributes
             guard let type = attributes[FileAttributeKey.type] as? FileAttributeType else {
@@ -79,28 +83,40 @@ class ZipCommand: Command {
 
             var attributesLog = "\tattributes:"
 
+            var attributesToWrite = [FileAttributeKey: Any]()
+
             #if !os(Linux) // On linux only permissions attribute is supported.
             if !noMtime.value, let mtime = attributes[FileAttributeKey.modificationDate] {
                 attributesLog += " mtime: \(mtime)"
-                try fileManager.setAttributes([FileAttributeKey.modificationDate : mtime],
-                                              ofItemAtPath: entryFullURL.path)
+                attributesToWrite[FileAttributeKey.modificationDate] = mtime
             }
 
-            if let readOnly = attributes[FileAttributeKey.appendOnly] {
+            if let readOnly = attributes[FileAttributeKey.appendOnly] as? Bool {
                 attributesLog += " read-only"
-                try fileManager.setAttributes([FileAttributeKey.appendOnly : readOnly],
-                                              ofItemAtPath: entryFullURL.path)
+                attributesToWrite[FileAttributeKey.appendOnly] = NSNumber(value: readOnly)
             }
             #endif
 
             if let permissions = attributes[FileAttributeKey.posixPermissions] as? UInt32 {
                 attributesLog += " permissions: \(permissions)"
-                try fileManager.setAttributes([FileAttributeKey.posixPermissions : NSNumber(value: permissions)],
-                                              ofItemAtPath: entryFullURL.path)
+                attributesToWrite[FileAttributeKey.posixPermissions] = NSNumber(value: permissions)
             }
 
+            if !isDirectory {
+                try fileManager.setAttributes(attributesToWrite, ofItemAtPath: entryFullURL.path)
+                if verbose.value {
+                    print(attributesLog)
+                }
+            } else {
+                directoryAttributes.append((attributesToWrite, entryFullURL.path, attributesLog))
+            }
+        }
+
+        for tuple in directoryAttributes {
+            try fileManager.setAttributes(tuple.attributes, ofItemAtPath: tuple.path)
             if verbose.value {
-                print(attributesLog)
+                print("set for dir: \(tuple.path) ", terminator: "")
+                print(tuple.log)
             }
         }
     }
