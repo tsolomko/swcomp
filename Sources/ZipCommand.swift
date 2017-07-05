@@ -85,21 +85,23 @@ class ZipCommand: Command {
 
             var attributesLog = "\tattributes:"
 
+            #if !os(Linux) // On linux only permissions attribute is supported.
             if !noMtime.value, let mtime = attributes[FileAttributeKey.modificationDate] {
                 attributesLog += " mtime: \(mtime)"
                 try fileManager.setAttributes([FileAttributeKey.modificationDate : mtime],
                                               ofItemAtPath: entryFullURL.path)
             }
 
-            if let permissions = attributes[FileAttributeKey.posixPermissions] {
-                attributesLog += " permissions: \(permissions)"
-                try fileManager.setAttributes([FileAttributeKey.posixPermissions : permissions],
-                                              ofItemAtPath: entryFullURL.path)
-            }
-
             if let readOnly = attributes[FileAttributeKey.appendOnly] {
                 attributesLog += " read-only"
                 try fileManager.setAttributes([FileAttributeKey.appendOnly : readOnly],
+                                              ofItemAtPath: entryFullURL.path)
+            }
+            #endif
+
+            if let permissions = attributes[FileAttributeKey.posixPermissions] {
+                attributesLog += " permissions: \(permissions)"
+                try fileManager.setAttributes([FileAttributeKey.posixPermissions : permissions],
                                               ofItemAtPath: entryFullURL.path)
             }
 
