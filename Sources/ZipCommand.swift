@@ -33,9 +33,6 @@ class ZipCommand: Command {
         let entries = try ZipContainer.open(container: fileData)
 
         for entry in entries {
-            let entryPath = entry.name
-            let entryFullURL = outputURL.appendingPathComponent(entryPath, isDirectory: isDirectory)
-
             let attributes = entry.entryAttributes
             guard let type = attributes[FileAttributeKey.type] as? FileAttributeType else {
                 print("ERROR: Not a FileAttributeType type. This error should never happen.")
@@ -43,6 +40,9 @@ class ZipCommand: Command {
             }
 
             let isDirectory = type == FileAttributeType.typeDirectory || entry.isDirectory
+
+            let entryPath = entry.name
+            let entryFullURL = outputURL.appendingPathComponent(entryPath, isDirectory: isDirectory)
 
             if isDirectory {
                 if verbose.value {
