@@ -60,6 +60,7 @@ class ZipCommand: Command {
                 if verbose.value {
                     print("symbolic link: \(entryPath)", terminator: "")
                 }
+                // In ZIP destination of link is in the contents of entry.
                 let entryData = try entry.data()
                 guard let destinationPath = String(data: entryData, encoding: .utf8) else {
                     print("ERROR: Unable to get destination path for symbolic link \(entryPath).")

@@ -57,8 +57,8 @@ class TarCommand: Command {
                 if verbose {
                     print("symbolic link: \(entryPath)", terminator: "")
                 }
-                let entryData = try entry.data()
-                guard let destinationPath = String(data: entryData, encoding: .utf8) else {
+                // For tar entries there is a special property `linkPath` for destination of link.
+                guard let destinationPath = (entry as! TarEntry).linkPath else {
                     print("ERROR: Unable to get destination path for symbolic link \(entryPath).")
                     exit(1)
                 }
@@ -89,7 +89,7 @@ class TarCommand: Command {
             }
             #endif
 
-            if let permissions = attributes[FileAttributeKey.posixPermissions] as? UInt32 {
+            if let permissions = attributes[FileAttributeKey.posixPermissions] as? Int {
                 attributesLog += " permissions: \(permissions)"
                 try fileManager.setAttributes([FileAttributeKey.posixPermissions : NSNumber(value: permissions)],
                                               ofItemAtPath: entryFullURL.path)
