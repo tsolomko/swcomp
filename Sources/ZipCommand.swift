@@ -99,7 +99,7 @@ class ZipCommand: Command {
             }
             #endif
 
-            if let permissions = attributes[FileAttributeKey.posixPermissions] {
+            if let permissions = attributes[FileAttributeKey.posixPermissions] as? UInt32 {
                 attributesLog += " permissions: \(permissions)"
                 try fileManager.setAttributes([FileAttributeKey.posixPermissions : NSNumber(value: permissions)],
                                               ofItemAtPath: entryFullURL.path)
