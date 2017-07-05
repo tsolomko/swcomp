@@ -22,26 +22,17 @@ class TarCommand: Command {
 
         let outputURL = URL(fileURLWithPath: outputPath)
 
-        var isDir: ObjCBool = false
-        if fileManager.fileExists(atPath: outputPath, isDirectory: &isDir) {
-            #if os(Linux) // On linux ObjCBool is an alias for Bool.
-                if !isDir {
-                    print("ERROR: Specified path already exists and is not a directory.")
-                    exit(1)
-                }
-            #else
-                if !isDir.boolValue {
-                    print("ERROR: Specified path already exists and is not a directory.")
-                    exit(1)
-                }
-            #endif
-        } else {
-            try fileManager.createDirectory(at: outputURL, withIntermediateDirectories: true)
+        if try !isValidOutputDirectory(outputPath, create: true) {
+            print("ERROR: Specified path already exists and is not a directory.")
+            exit(1)
         }
 
         let entries = try TarContainer.open(container: data)
 
         for entry in entries {
+            let entryPath = entry.name
+            let entryFullURL = outputURL.appendingPathComponent(entryPath, isDirectory: isDirectory)
+
             let attributes = entry.entryAttributes
             guard let type = attributes[FileAttributeKey.type] as? FileAttributeType else {
                 print("ERROR: Not a FileAttributeType type. This error should never happen.")
@@ -49,9 +40,6 @@ class TarCommand: Command {
             }
 
             let isDirectory = type == FileAttributeType.typeDirectory || entry.isDirectory
-
-            let entryPath = entry.name
-            let entryFullURL = outputURL.appendingPathComponent(entryPath, isDirectory: isDirectory)
 
             if isDirectory {
                 if verbose {
