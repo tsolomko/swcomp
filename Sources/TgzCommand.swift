@@ -21,7 +21,7 @@ class TgzCommand: Command {
         let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
                                 options: .mappedIfSafe)
         let containerData = try BZip2.decompress(data: fileData)
-        try TarCommand.process(tarContainer: containerData, outputPath.value, noMtime.value, verbose.value)
+        try TarCommand.process(tarContainer: containerData, outputPath.value, !noMtime.value, verbose.value)
     }
 
 }

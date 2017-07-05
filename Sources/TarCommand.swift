@@ -106,7 +106,7 @@ class TarCommand: Command {
                         options: .mappedIfSafe)
 
         let outputPath = self.outputPath.value
-        try TarCommand.process(tarContainer: fileData, outputPath, noMtime.value, verbose.value)
+        try TarCommand.process(tarContainer: fileData, outputPath, !noMtime.value, verbose.value)
     }
 
 }
