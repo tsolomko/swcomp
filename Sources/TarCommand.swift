@@ -81,12 +81,6 @@ class TarCommand: Command {
                 try fileManager.setAttributes([FileAttributeKey.modificationDate : mtime],
                                               ofItemAtPath: entryFullURL.path)
             }
-
-            if let readOnly = attributes[FileAttributeKey.appendOnly] {
-                attributesLog += " read-only"
-                try fileManager.setAttributes([FileAttributeKey.appendOnly : readOnly],
-                                              ofItemAtPath: entryFullURL.path)
-            }
             #endif
 
             if let permissions = attributes[FileAttributeKey.posixPermissions] as? Int {
