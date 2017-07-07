@@ -75,6 +75,7 @@ class TarCommand: Command {
                 continue
             } else {
                 print("WARNING: Unknown file type \(type) for entry \(entryPath). Skipping this entry.")
+                continue
             }
 
             var attributesLog = "\tattributes:"
