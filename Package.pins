@@ -5,7 +5,7 @@
       "package": "SWCompression",
       "reason": null,
       "repositoryURL": "https://github.com/tsolomko/SWCompression",
-      "version": "3.1.1"
+      "version": "3.1.2"
     },
     {
       "package": "SwiftCLI",
