@@ -20,7 +20,7 @@ class TgzCommand: Command {
     func execute() throws {
         let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
                                 options: .mappedIfSafe)
-        let containerData = try BZip2.decompress(data: fileData)
+        let containerData = try GzipArchive.unarchive(archive: fileData)
         try TarCommand.process(tarContainer: containerData, outputPath.value, !noMtime.value, verbose.value)
     }
 
