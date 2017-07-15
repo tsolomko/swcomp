@@ -87,6 +87,11 @@ class TarCommand: Command {
                 attributesLog += " mtime: \(mtime)"
                 attributesToWrite[FileAttributeKey.modificationDate] = mtime
             }
+
+            if let ctime = attributes[FileAttributeKey.creationDate] {
+                attributesLog += " ctime: \(ctime)"
+                attributesToWrite[FileAttributeKey.creationDate] = ctime
+            }
             #endif
 
             if let permissions = attributes[FileAttributeKey.posixPermissions] as? Int {
