@@ -12,12 +12,10 @@ class TarCommand: Command {
     let name = "tar"
     let shortDescription = "Extracts TAR container"
 
-    let noMtime = Flag("--no-restore-mtime", usage: "Don't restore modification time of files and directories.")
-
     let archive = Parameter()
     let outputPath = Parameter()
 
-    static func process(tarContainer data: Data, _ outputPath: String, _ writeMtime: Bool, _ verbose: Bool) throws {
+    static func process(tarContainer data: Data, _ outputPath: String, _ verbose: Bool) throws {
         let fileManager = FileManager.default
 
         let outputURL = URL(fileURLWithPath: outputPath)
@@ -83,7 +81,7 @@ class TarCommand: Command {
             var attributesToWrite = [FileAttributeKey: Any]()
 
             #if !os(Linux) // On linux only permissions attribute is supported.
-            if writeMtime, let mtime = attributes[FileAttributeKey.modificationDate] {
+            if let mtime = attributes[FileAttributeKey.modificationDate] {
                 attributesLog += " mtime: \(mtime)"
                 attributesToWrite[FileAttributeKey.modificationDate] = mtime
             }
@@ -123,7 +121,7 @@ class TarCommand: Command {
                         options: .mappedIfSafe)
 
         let outputPath = self.outputPath.value
-        try TarCommand.process(tarContainer: fileData, outputPath, !noMtime.value, verbose.value)
+        try TarCommand.process(tarContainer: fileData, outputPath, verbose.value)
     }
 
 }

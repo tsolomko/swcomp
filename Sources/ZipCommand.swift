@@ -12,8 +12,6 @@ class ZipCommand: Command {
     let name = "zip"
     let shortDescription = "Extracts ZIP container"
 
-    let noMtime = Flag("--no-restore-mtime", usage: "Don't restore modification time of files and directories.")
-
     let archive = Parameter()
     let outputPath = Parameter()
 
@@ -87,7 +85,7 @@ class ZipCommand: Command {
             var attributesToWrite = [FileAttributeKey: Any]()
 
             #if !os(Linux) // On linux only permissions attribute is supported.
-            if !noMtime.value, let mtime = attributes[FileAttributeKey.modificationDate] {
+            if let mtime = attributes[FileAttributeKey.modificationDate] {
                 attributesLog += " mtime: \(mtime)"
                 attributesToWrite[FileAttributeKey.modificationDate] = mtime
             }
