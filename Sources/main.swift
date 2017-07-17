@@ -10,7 +10,7 @@ import SwiftCLI
 /* TODO: Switch to usage of Bundle.allBundles() function of Foundation framework when it becomes implemented.*/
 // Version constants:
 let SWCompressionVersion = "3.2.0"
-let swcompRevision = "71"
+let swcompRevision = "72"
 
 CLI.setup(name: "swcomp",
           version: "\(swcompRevision), SWCompression version: \(SWCompressionVersion)",
@@ -22,8 +22,5 @@ CLI.register(commands: [XZCommand(),
                         GZipCommand(),
                         CompressGZipCommand(),
                         ZipCommand(),
-                        TarCommand(),
-                        TgzCommand(),
-                        TxzCommand(),
-                        Tbz2Command()])
+                        TarCommand()])
 _ = CLI.go()

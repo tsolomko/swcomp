@@ -25,21 +25,3 @@ extension TarCommand {
         return GlobalOptions.verbose
     }
 }
-
-extension TgzCommand {
-    var verbose: Flag {
-        return GlobalOptions.verbose
-    }
-}
-
-extension TxzCommand {
-    var verbose: Flag {
-        return GlobalOptions.verbose
-    }
-}
-
-extension Tbz2Command {
-    var verbose: Flag {
-        return GlobalOptions.verbose
-    }
-}

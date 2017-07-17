@@ -12,6 +12,15 @@ class TarCommand: Command {
     let name = "tar"
     let shortDescription = "Extracts TAR container"
 
+    let gz = Flag("-z", "--gz", usage: "Decompress with GZip first")
+    let bz2 = Flag("-j", "--bz2", usage: "Decompress with BZip2 first")
+    let xz = Flag("-x", "--xz", usage: "Decompress with XZ first")
+
+    var optionGroups: [OptionGroup] {
+        let compressions = OptionGroup(options: [gz, bz2, xz], restriction: .atMostOne)
+        return [compressions]
+    }
+
     let archive = Parameter()
     let outputPath = Parameter()
 
@@ -117,8 +126,16 @@ class TarCommand: Command {
     }
 
     func execute() throws {
-        let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
-                        options: .mappedIfSafe)
+        var fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
+                                options: .mappedIfSafe)
+
+        if gz.value {
+            fileData = try GzipArchive.unarchive(archive: fileData)
+        } else if bz2.value {
+            fileData = try BZip2.decompress(data: fileData)
+        } else if xz.value {
+            fileData = try XZArchive.unarchive(archive: fileData)
+        }
 
         let outputPath = self.outputPath.value
         try TarCommand.process(tarContainer: fileData, outputPath, verbose.value)
