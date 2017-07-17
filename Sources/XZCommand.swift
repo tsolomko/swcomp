@@ -16,9 +16,9 @@ class XZCommand: Command {
     let outputPath = OptionalParameter()
 
     func execute() throws {
-        let inputURL = URL(fileURLWithPath: self.archive.value)
-        let fileData = try Data(contentsOf: inputURL, options: .mappedIfSafe)
-        let outputPath = self.outputPath.value ?? inputURL.deletingLastPathComponent().path
+        let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
+                        options: .mappedIfSafe)
+        let outputPath = self.outputPath.value ?? FileManager.default.currentDirectoryPath
         let decompressedData = try XZArchive.unarchive(archive: fileData)
         try decompressedData.write(to: URL(fileURLWithPath: outputPath))
     }

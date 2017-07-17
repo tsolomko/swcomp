@@ -126,8 +126,8 @@ class TarCommand: Command {
     }
 
     func execute() throws {
-        let inputURL = URL(fileURLWithPath: self.archive.value)
-        var fileData = try Data(contentsOf: inputURL, options: .mappedIfSafe)
+        var fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
+                        options: .mappedIfSafe)
 
         if gz.value {
             fileData = try GzipArchive.unarchive(archive: fileData)
@@ -137,7 +137,7 @@ class TarCommand: Command {
             fileData = try XZArchive.unarchive(archive: fileData)
         }
 
-        let outputPath = self.outputPath.value ?? inputURL.deletingLastPathComponent().path
+        let outputPath = self.outputPath.value ?? FileManager.default.currentDirectoryPath
         try TarCommand.process(tarContainer: fileData, outputPath, verbose.value)
     }
 

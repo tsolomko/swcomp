@@ -18,9 +18,9 @@ class ZipCommand: Command {
     func execute() throws {
         let fileManager = FileManager.default
 
-        let inputURL = URL(fileURLWithPath: self.archive.value)
-        let fileData = try Data(contentsOf: inputURL, options: .mappedIfSafe)
-        let outputPath = self.outputPath.value ?? inputURL.deletingLastPathComponent().path
+        let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
+                                options: .mappedIfSafe)
+        let outputPath = self.outputPath.value ?? FileManager.default.currentDirectoryPath
         let outputURL = URL(fileURLWithPath: outputPath)
 
         if try !isValidOutputDirectory(outputPath, create: true) {
