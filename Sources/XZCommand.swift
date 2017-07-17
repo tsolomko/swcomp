@@ -13,12 +13,12 @@ class XZCommand: Command {
     let shortDescription = "Extracts XZ archive"
 
     let archive = Parameter()
-    let outputPath = Parameter()
+    let outputPath = OptionalParameter()
 
     func execute() throws {
-        let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
-                                options: .mappedIfSafe)
-        let outputPath = self.outputPath.value
+        let inputURL = URL(fileURLWithPath: self.archive.value)
+        let fileData = try Data(contentsOf: inputURL, options: .mappedIfSafe)
+        let outputPath = self.outputPath.value ?? inputURL.deletingLastPathComponent().path
         let decompressedData = try XZArchive.unarchive(archive: fileData)
         try decompressedData.write(to: URL(fileURLWithPath: outputPath))
     }

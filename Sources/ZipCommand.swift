@@ -13,12 +13,14 @@ class ZipCommand: Command {
     let shortDescription = "Extracts ZIP container"
 
     let archive = Parameter()
-    let outputPath = Parameter()
+    let outputPath = OptionalParameter()
 
     func execute() throws {
         let fileManager = FileManager.default
 
-        let outputPath = self.outputPath.value
+        let inputURL = URL(fileURLWithPath: self.archive.value)
+        let fileData = try Data(contentsOf: inputURL, options: .mappedIfSafe)
+        let outputPath = self.outputPath.value ?? inputURL.deletingLastPathComponent().path
         let outputURL = URL(fileURLWithPath: outputPath)
 
         if try !isValidOutputDirectory(outputPath, create: true) {
@@ -26,8 +28,6 @@ class ZipCommand: Command {
             exit(1)
         }
 
-        let fileData = try Data(contentsOf: URL(fileURLWithPath: self.archive.value),
-                                options: .mappedIfSafe)
         let entries = try ZipContainer.open(container: fileData)
 
         var directoryAttributes = [(attributes: [FileAttributeKey: Any],
