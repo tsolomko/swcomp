@@ -1,0 +1,16 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "taskName": "Build Release",
+            "command": "swift build -c release",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "focus": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}
