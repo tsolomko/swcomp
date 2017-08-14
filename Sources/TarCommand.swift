@@ -16,13 +16,66 @@ class TarCommand: Command {
     let bz2 = Flag("-j", "--bz2", usage: "Decompress with BZip2 first")
     let xz = Flag("-x", "--xz", usage: "Decompress with XZ first")
 
+    let info = Flag("-i", "--info", usage: "Print list of entries in container and their attributes")
+    let extract = Key<String>("-e", "--extract", usage: "Extract container into specified directory (it must be empty or not exist)")
+
     var optionGroups: [OptionGroup] {
         let compressions = OptionGroup(options: [gz, bz2, xz], restriction: .atMostOne)
-        return [compressions]
+        let actions = OptionGroup(options: [info, extract], restriction: .exactlyOne)
+        return [compressions, actions]
     }
 
     let archive = Parameter()
-    let outputPath = OptionalParameter()
+
+    static func printInfo(tarContainer data: Data) throws {
+        let entries = try TarContainer.open(container: data)
+
+        print("d = directory, f = file, l = symbolic link")
+
+        for entry in entries {
+            let attributes = entry.entryAttributes
+            guard let type = attributes[FileAttributeKey.type] as? FileAttributeType else {
+                print("ERROR: Not a FileAttributeType type. This error should never happen.")
+                exit(1)
+            }
+
+            let isDirectory = type == FileAttributeType.typeDirectory || entry.isDirectory
+            let entryPath = entry.name
+
+            if isDirectory {
+                print("d: \(entryPath)")
+            } else if type == FileAttributeType.typeRegular {
+                print("f: \(entryPath)")
+            } else if type == FileAttributeType.typeSymbolicLink {
+                // Data of entry is a relative path from the directory in which entry is located to destination.
+                // For tar entries there is a special property `linkPath` for destination of link.
+                guard let destinationPath = (entry as! TarEntry).linkPath else {
+                    print("ERROR: Unable to get destination path for symbolic link \(entryPath).")
+                    exit(1)
+                }
+                print("l: \(entryPath) -> \(destinationPath)")
+            } else {
+                print("WARNING: Unknown file type \(type) for entry \(entryPath). Skipping this entry.")
+                continue
+            }
+
+            var attributesLog = " attributes:"
+
+            if let mtime = attributes[FileAttributeKey.modificationDate] {
+                attributesLog += " mtime: \(mtime)"
+            }
+
+            if let ctime = attributes[FileAttributeKey.creationDate] {
+                attributesLog += " ctime: \(ctime)"
+            }
+
+            if let permissions = attributes[FileAttributeKey.posixPermissions] as? Int {
+                attributesLog += String(format: " permissions: %o", permissions)
+            }
+
+            print(attributesLog)
+        }
+    }
 
     static func process(tarContainer data: Data, _ outputPath: String, _ verbose: Bool) throws {
         let fileManager = FileManager.default
@@ -113,6 +166,8 @@ class TarCommand: Command {
                     print(attributesLog)
                 }
             } else {
+                // We apply attributes to directories later,
+                //  because extracting files into them changes mtime.
                 directoryAttributes.append((attributesToWrite, entryFullURL.path, attributesLog))
             }
         }
@@ -138,8 +193,12 @@ class TarCommand: Command {
             fileData = try XZArchive.unarchive(archive: fileData)
         }
 
-        let outputPath = self.outputPath.value ?? FileManager.default.currentDirectoryPath
-        try TarCommand.process(tarContainer: fileData, outputPath, verbose.value)
+        if info.value {
+            try TarCommand.printInfo(tarContainer: fileData)
+        } else {
+            let outputPath = self.extract.value ?? FileManager.default.currentDirectoryPath
+            try TarCommand.process(tarContainer: fileData, outputPath, verbose.value)
+        }
     }
 
 }
