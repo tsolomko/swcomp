@@ -86,7 +86,7 @@ class TarCommand: Command {
                 continue
             }
 
-            var attributesLog = "\tattributes:"
+            var attributesLog = " attributes:"
 
             var attributesToWrite = [FileAttributeKey: Any]()
 
@@ -103,7 +103,7 @@ class TarCommand: Command {
             #endif
 
             if let permissions = attributes[FileAttributeKey.posixPermissions] as? Int {
-                attributesLog += " permissions: \(permissions)"
+                attributesLog += String(format: " permissions: %o", permissions)
                 attributesToWrite[FileAttributeKey.posixPermissions] = NSNumber(value: permissions)
             }
 
@@ -120,7 +120,7 @@ class TarCommand: Command {
         for tuple in directoryAttributes {
             try fileManager.setAttributes(tuple.attributes, ofItemAtPath: tuple.path)
             if verbose {
-                print("set for dir: \(tuple.path) ", terminator: "")
+                print("set for dir: \(tuple.path)", terminator: "")
                 print(tuple.log)
             }
         }

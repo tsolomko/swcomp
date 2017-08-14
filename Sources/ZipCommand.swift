@@ -81,7 +81,7 @@ class ZipCommand: Command {
                 continue
             }
 
-            var attributesLog = "\tattributes:"
+            var attributesLog = " attributes:"
 
             var attributesToWrite = [FileAttributeKey: Any]()
 
@@ -98,7 +98,7 @@ class ZipCommand: Command {
             #endif
 
             if let permissions = attributes[FileAttributeKey.posixPermissions] as? UInt32 {
-                attributesLog += " permissions: \(permissions)"
+                attributesLog += String(format: " permissions: %o", permissions)
                 attributesToWrite[FileAttributeKey.posixPermissions] = NSNumber(value: permissions)
             }
 
@@ -115,7 +115,7 @@ class ZipCommand: Command {
         for tuple in directoryAttributes {
             try fileManager.setAttributes(tuple.attributes, ofItemAtPath: tuple.path)
             if verbose.value {
-                print("set for dir: \(tuple.path) ", terminator: "")
+                print("set for dir: \(tuple.path)", terminator: "")
                 print(tuple.log)
             }
         }
