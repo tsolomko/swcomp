@@ -25,3 +25,9 @@ extension TarCommand {
         return GlobalOptions.verbose
     }
 }
+
+extension SevenZipCommand {
+    var verbose: Flag {
+        return GlobalOptions.verbose
+    }
+}
