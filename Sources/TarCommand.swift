@@ -40,6 +40,10 @@ class TarCommand: Command {
                                     path: String,
                                     log: String)]()
 
+        if verbose {
+            print("d = directory, f = file, l = symbolic link")
+        }
+
         for entry in entries {
             let attributes = entry.entryAttributes
             guard let type = attributes[FileAttributeKey.type] as? FileAttributeType else {
@@ -54,20 +58,17 @@ class TarCommand: Command {
 
             if isDirectory {
                 if verbose {
-                    print("directory: \(entryPath)")
+                    print("d: \(entryPath)")
                 }
                 try fileManager.createDirectory(at: entryFullURL, withIntermediateDirectories: true)
             } else if type == FileAttributeType.typeRegular {
                 if verbose {
-                    print("file: \(entryPath)")
+                    print("f: \(entryPath)")
                 }
                 let entryData = try entry.data()
                 try entryData.write(to: entryFullURL)
             } else if type == FileAttributeType.typeSymbolicLink {
                 // Data of entry is a relative path from the directory in which entry is located to destination.
-                if verbose {
-                    print("symbolic link: \(entryPath)", terminator: "")
-                }
                 // For tar entries there is a special property `linkPath` for destination of link.
                 guard let destinationPath = (entry as! TarEntry).linkPath else {
                     print("ERROR: Unable to get destination path for symbolic link \(entryPath).")
@@ -75,7 +76,7 @@ class TarCommand: Command {
                 }
                 let endURL = entryFullURL.deletingLastPathComponent().appendingPathComponent(destinationPath)
                 if verbose {
-                    print(" destination: \(endURL.path)")
+                    print("l: \(entryPath) -> \(endURL.path)")
                 }
                 try fileManager.createSymbolicLink(atPath: entryFullURL.path, withDestinationPath: endURL.path)
                 // We cannot apply attributes to symbolic link.

@@ -34,6 +34,10 @@ class ZipCommand: Command {
                                     path: String,
                                     log: String)]()
 
+        if verbose.value {
+            print("d = directory, f = file, l = symbolic link")
+        }
+
         for entry in entries {
             let attributes = entry.entryAttributes
             guard let type = attributes[FileAttributeKey.type] as? FileAttributeType else {
@@ -48,20 +52,17 @@ class ZipCommand: Command {
 
             if isDirectory {
                 if verbose.value {
-                    print("directory: \(entryPath)")
+                    print("d: \(entryPath)")
                 }
                 try fileManager.createDirectory(at: entryFullURL, withIntermediateDirectories: true)
             } else if type == FileAttributeType.typeRegular {
                 if verbose.value {
-                    print("file: \(entryPath)")
+                    print("f: \(entryPath)")
                 }
                 let entryData = try entry.data()
                 try entryData.write(to: entryFullURL)
             } else if type == FileAttributeType.typeSymbolicLink {
                 // Data of entry is a relative path from the directory in which entry is located to destination.
-                if verbose.value {
-                    print("symbolic link: \(entryPath)", terminator: "")
-                }
                 // In ZIP destination of link is in the contents of entry.
                 let entryData = try entry.data()
                 guard let destinationPath = String(data: entryData, encoding: .utf8) else {
@@ -70,7 +71,7 @@ class ZipCommand: Command {
                 }
                 let endURL = entryFullURL.deletingLastPathComponent().appendingPathComponent(destinationPath)
                 if verbose.value {
-                    print(" destination: \(endURL.path)")
+                    print("l: \(entryPath) -> \(endURL.path)")
                 }
                 try fileManager.createSymbolicLink(atPath: entryFullURL.path, withDestinationPath: endURL.path)
                 // We cannot apply attributes to symbolic link.
