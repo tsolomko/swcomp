@@ -35,3 +35,7 @@ To list all available commands, run:
 
 It is recommended to specify full absolute paths, especially on Linux,
 because it seems like there are some problems with path resolving in Swift.
+
+Known Issues
+------------
+- `7z` command with `--info` option doesn't use `SevenZipContainer.info` function as intended.
