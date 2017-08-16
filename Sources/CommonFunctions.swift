@@ -66,6 +66,8 @@ func printInfo(_ entries: [ContainerEntry]) {
 
         if let permissions = attributes[FileAttributeKey.posixPermissions] as? UInt32 {
             attributesLog += String(format: " permissions: %o", permissions)
+        } else if let permissions = attributes[FileAttributeKey.posixPermissions] as? Int {
+            attributesLog += String(format: " permissions: %o", permissions)
         }
 
         print(attributesLog)
