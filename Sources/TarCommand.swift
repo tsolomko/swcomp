@@ -44,16 +44,14 @@ class TarCommand: Command {
 
             if isDirectory {
                 print("d: \(entryPath)")
-            } else if type == FileAttributeType.typeRegular {
-                print("f: \(entryPath)")
-            } else if type == FileAttributeType.typeSymbolicLink {
-                // Data of entry is a relative path from the directory in which entry is located to destination.
-                // For tar entries there is a special property `linkPath` for destination of link.
-                guard let destinationPath = (entry as! TarEntry).linkPath else {
+            } else if entry.isLink {
+                guard let destinationPath = entry.linkPath else {
                     print("ERROR: Unable to get destination path for symbolic link \(entryPath).")
                     exit(1)
                 }
                 print("l: \(entryPath) -> \(destinationPath)")
+            } else if type == FileAttributeType.typeRegular {
+                print("f: \(entryPath)")
             } else {
                 print("WARNING: Unknown file type \(type) for entry \(entryPath). Skipping this entry.")
                 continue
@@ -114,16 +112,8 @@ class TarCommand: Command {
                     print("d: \(entryPath)")
                 }
                 try fileManager.createDirectory(at: entryFullURL, withIntermediateDirectories: true)
-            } else if type == FileAttributeType.typeRegular {
-                if verbose {
-                    print("f: \(entryPath)")
-                }
-                let entryData = try entry.data()
-                try entryData.write(to: entryFullURL)
-            } else if type == FileAttributeType.typeSymbolicLink {
-                // Data of entry is a relative path from the directory in which entry is located to destination.
-                // For tar entries there is a special property `linkPath` for destination of link.
-                guard let destinationPath = (entry as! TarEntry).linkPath else {
+            } else if entry.isLink {
+                guard let destinationPath = entry.linkPath else {
                     print("ERROR: Unable to get destination path for symbolic link \(entryPath).")
                     exit(1)
                 }
@@ -134,6 +124,12 @@ class TarCommand: Command {
                 try fileManager.createSymbolicLink(atPath: entryFullURL.path, withDestinationPath: endURL.path)
                 // We cannot apply attributes to symbolic link.
                 continue
+            } else if type == FileAttributeType.typeRegular {
+                if verbose {
+                    print("f: \(entryPath)")
+                }
+                let entryData = try entry.data()
+                try entryData.write(to: entryFullURL)
             } else {
                 print("WARNING: Unknown file type \(type) for entry \(entryPath). Skipping this entry.")
                 continue
