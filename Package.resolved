@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "SWCompression",
+        "repositoryURL": "https://github.com/tsolomko/SWCompression",
+        "state": {
+          "branch": null,
+          "revision": "11370465af7abaedf3838fdcef6b9ce853343acd",
+          "version": "3.3.0"
+        }
+      },
+      {
+        "package": "SwiftCLI",
+        "repositoryURL": "https://github.com/jakeheis/SwiftCLI",
+        "state": {
+          "branch": null,
+          "revision": "36bb5dd52deed7264b6f41c1a2190d376cb9f17c",
+          "version": "3.0.3"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
