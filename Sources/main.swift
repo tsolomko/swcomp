@@ -9,8 +9,8 @@ import SwiftCLI
 
 /* TODO: Switch to usage of Bundle.allBundles() function of Foundation framework when it becomes implemented.*/
 // Version constants:
-let SWCompressionVersion = "3.3.1"
-let swcompRevision = "85"
+let SWCompressionVersion = "3.4.0-test"
+let swcompRevision = "86"
 
 CLI.setup(name: "swcomp",
           version: "\(swcompRevision), SWCompression version: \(SWCompressionVersion)",
