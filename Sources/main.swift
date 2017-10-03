@@ -19,10 +19,10 @@ SwiftCLI.GlobalOptions.source(GlobalOptions.self)
 CLI.register(commands: [XZCommand(),
                         LZMACommand(),
                         BZip2Command(),
+                        CompressBZip2Command(),
                         GZipCommand(),
                         CompressGZipCommand(),
                         ZipCommand(),
                         TarCommand(),
-                        SevenZipCommand(),
-                        CompressBZip2Command()])
+                        SevenZipCommand()])
 _ = CLI.go()
