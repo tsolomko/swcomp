@@ -9,7 +9,7 @@ import SwiftCLI
 
 class BZip2Command: Command {
 
-    let name = "bz2"
+    let name = "bz2-d"
     let shortDescription = "Extracts BZip2 archive"
 
     let archive = Parameter()
